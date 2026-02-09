@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
 import InputPage from './pages/InputPage';
 import ResultPage from './pages/ResultPage';
 
@@ -11,10 +12,10 @@ const App: React.FC = () => {
         {/* Simple Navigation Header */}
         <header className="bg-blue-700 text-white shadow-md p-4 sticky top-0 z-50">
           <div className="container mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <i className="fas fa-microscope text-2xl"></i>
               <h1 className="text-xl font-bold tracking-tight">NeuroGuard</h1>
-            </div>
+            </Link>
             <div className="hidden md:block text-sm font-medium opacity-80">
               Early Detection System v1.0
             </div>
@@ -22,9 +23,10 @@ const App: React.FC = () => {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<InputPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/test" element={<InputPage />} />
             <Route path="/result" element={<ResultPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

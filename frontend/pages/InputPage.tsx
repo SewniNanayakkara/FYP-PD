@@ -104,7 +104,7 @@ const InputPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
           <i className="fas fa-clipboard-user text-blue-600"></i>

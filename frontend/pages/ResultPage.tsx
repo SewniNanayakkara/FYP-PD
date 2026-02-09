@@ -83,7 +83,7 @@ const ResultPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto animate-in fade-in duration-500">
+    <div className="container mx-auto px-4 py-8 max-w-4xl animate-in fade-in duration-500">
       {/* Result Card */}
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-8">
         {/* Header Banner */}
@@ -241,7 +241,7 @@ const ResultPage: React.FC = () => {
             Print Report
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/test')}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-bold shadow-md transition-all active:scale-95 flex items-center gap-2"
           >
             <i className="fas fa-chevron-left"></i>
