@@ -1,0 +1,8 @@
+
+{
+  "name": "Parkinson's Early Detection System",
+  "description": "A clinical-grade React application for predicting Parkinson's Disease based on patient data, MRI scans, and handwriting analysis.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
