@@ -2,9 +2,9 @@ import os
 import random
 import shutil
 
-# =========================
+
 # PATHS
-# =========================
+
 SRC_DIR = "dataset_extracted"
 DST_DIR = "dataset_split"
 
@@ -16,16 +16,16 @@ SPLITS = {
 
 CLASSES = ["Healthy", "Parkinson"]
 
-# =========================
+
 # CREATE FOLDERS
-# =========================
+
 for split in SPLITS:
     for cls in CLASSES:
         os.makedirs(os.path.join(DST_DIR, split, cls), exist_ok=True)
 
-# =========================
+
 # SPLIT FUNCTION
-# =========================
+
 def split_class(cls_name):
     src_class_dir = os.path.join(SRC_DIR, cls_name)
     images = os.listdir(src_class_dir)
@@ -49,9 +49,9 @@ def split_class(cls_name):
 
     print(f"{cls_name}: {n} images split")
 
-# =========================
+
 # RUN SPLIT
-# =========================
+
 for cls in CLASSES:
     split_class(cls)
 

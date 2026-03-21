@@ -14,7 +14,7 @@ const App: React.FC = () => {
           <div className="container mx-auto flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <i className="fas fa-microscope text-2xl"></i>
-              <h1 className="text-xl font-bold tracking-tight">NeuroGuard</h1>
+              <h1 className="text-xl font-bold tracking-tight">PDMatrix</h1>
             </Link>
             <div className="hidden md:block text-sm font-medium opacity-80">
               Early Detection System v1.0

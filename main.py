@@ -16,21 +16,21 @@ from typing import Optional
 # Load environment variables
 load_dotenv()
 
-# =========================================================
+
 # Hugging Face Configuration
-# =========================================================
+
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 MISTRAL_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 HF_API_URL = f"https://api-inference.huggingface.co/models/{MISTRAL_MODEL}"
 
-# =========================================================
+
 # FastAPI App
-# =========================================================
+
 app = FastAPI(title="Parkinson AI Prediction API")
 
-# =========================================================
+
 # Enable CORS
-# =========================================================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -39,24 +39,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =========================================================
+
 # Model Paths
-# =========================================================
+
 HANDWRITING_MODEL_PATH = "models/parkinsons_handwriting_model.keras"
 MRI_MODEL_PATH = "models/mri_model.keras"
 
-# =========================================================
+
 # Load Models (once at startup)
-# =========================================================
+
 handwriting_model = tf.keras.models.load_model(HANDWRITING_MODEL_PATH)
 mri_model = tf.keras.models.load_model(MRI_MODEL_PATH)
 
 print("✅ Handwriting model loaded")
 print("✅ MRI model loaded")
 
-# =========================================================
+
 # Constants
-# =========================================================
+
 HANDWRITING_IMG_SIZE = (224, 224)
 MRI_IMG_SIZE = (192, 192)
 
@@ -64,9 +64,9 @@ LOW_THRESHOLD = 0.3
 HIGH_THRESHOLD = 0.7
 MRI_THRESHOLD = 0.4
 
-# =========================================================
+
 # Utility Functions
-# =========================================================
+
 def preprocess_handwriting(file_bytes):
     img = Image.open(io.BytesIO(file_bytes)).convert("RGB")
     img = img.resize(HANDWRITING_IMG_SIZE)
@@ -86,18 +86,17 @@ def preprocess_mri(file_bytes):
     return img_array
 
 
-# =========================================================
 # Routes
-# =========================================================
+
 
 @app.get("/")
 def root():
     return {"message": "🧠 Parkinson AI API is running"}
 
 
-# ---------------------------------------------------------
+
 # Handwriting Prediction Endpoint
-# ---------------------------------------------------------
+
 @app.post("/predict/handwriting")
 async def predict_handwriting(file: UploadFile = File(...)):
     try:
@@ -131,9 +130,9 @@ async def predict_handwriting(file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
-# ---------------------------------------------------------
+
 # MRI Prediction Endpoint
-# ---------------------------------------------------------
+
 @app.post("/predict/mri")
 async def predict_mri(file: UploadFile = File(...)):
     try:
@@ -161,9 +160,9 @@ async def predict_mri(file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
-# ---------------------------------------------------------
+
 # Pydantic Models for AI Analysis
-# ---------------------------------------------------------
+
 class PatientAnalysisRequest(BaseModel):
     age: int
     gender: str
@@ -173,9 +172,9 @@ class PatientAnalysisRequest(BaseModel):
     test_method: str  # "handwriting" or "mri"
 
 
-# ---------------------------------------------------------
+
 # Helper Function for Mistral API
-# ---------------------------------------------------------
+
 def query_mistral(prompt: str) -> str:
     """Query the Mistral model via Hugging Face API"""
     headers = {
@@ -210,9 +209,9 @@ def query_mistral(prompt: str) -> str:
         return None
 
 
-# ---------------------------------------------------------
+
 # AI-Powered Analysis Endpoint
-# ---------------------------------------------------------
+
 @app.post("/analyze/patient")
 async def analyze_patient(request: PatientAnalysisRequest):
     """

@@ -16,7 +16,7 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
             <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6">
-              NeuroGuard
+              PDMatrix
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
               Early Detection System for Parkinson's Disease
