@@ -38,7 +38,6 @@ pip-delete-this-directory.txt
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
 
 # IDE
 .vscode/
@@ -102,4 +101,5 @@ MRI/png_dataset
 /Handwriting/dataset_split
 /Handwriting/model
 /models
+/Voice/dataset
 
