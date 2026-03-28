@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
               Early Detection System for Parkinson's Disease
             </p>
             <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-              Leveraging AI-powered analysis of handwriting patterns and MRI imaging to detect early signs of Parkinson's disease with clinical precision
+              Leveraging AI-powered analysis of handwriting patterns, voice recordings, and MRI imaging to detect early signs of Parkinson's disease with clinical precision
             </p>
           </div>
 
@@ -147,7 +147,7 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Image Upload</h3>
               <p className="text-gray-600">
-                Upload handwriting sample or MRI scan image for analysis
+                Upload handwriting sample, voice recording, or MRI scan image for analysis
               </p>
             </div>
 

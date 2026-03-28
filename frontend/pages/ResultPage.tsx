@@ -99,7 +99,10 @@ const ResultPage: React.FC = () => {
             {isPositive ? 'Parkinson Detected' : 'Healthy'}
           </h2>
           <p className="text-lg opacity-80">Patient: <span className="font-bold underline">{patientName}</span></p>
-          <p className="text-sm opacity-70 mt-2">Test Method: {method === 'handwriting' ? 'Handwriting Analysis' : 'MRI Scan'}</p>
+          <p className="text-sm opacity-70 mt-2">Test Method: {
+            method === 'handwriting' ? 'Handwriting Analysis' :
+            method === 'mri' ? 'MRI Scan' : 'Voice Analysis'
+          }</p>
         </div>
 
         <div className="p-8">
@@ -124,7 +127,10 @@ const ResultPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-gray-500 font-medium">Test Method</p>
-                <p className="text-gray-800 font-semibold">{method === 'handwriting' ? 'Handwriting' : 'MRI'}</p>
+                <p className="text-gray-800 font-semibold">{
+                  method === 'handwriting' ? 'Handwriting' :
+                  method === 'mri' ? 'MRI' : 'Voice'
+                }</p>
               </div>
             </div>
             {patientSymptoms && (
@@ -156,7 +162,8 @@ const ResultPage: React.FC = () => {
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
               <p className="text-xs uppercase font-bold text-gray-500 mb-1">Test Method</p>
               <p className="text-lg font-bold text-gray-800">
-                {method === 'handwriting' ? '✍️ Handwriting' : '🧠 MRI'}
+                {method === 'handwriting' ? '✍️ Handwriting' :
+                 method === 'mri' ? '🧠 MRI' : '🎤 Voice'}
               </p>
             </div>
           </div>
@@ -222,7 +229,10 @@ const ResultPage: React.FC = () => {
                 Analysis Details
               </h3>
               <p className="text-blue-800 text-sm">
-                <strong>Detection Model:</strong> {result.model === 'handwriting' ? 'Handwriting Pattern Analysis AI' : 'MRI Brain Scan Analysis AI'}<br/>
+                <strong>Detection Model:</strong> {
+                  result.model === 'handwriting' ? 'Handwriting Pattern Analysis AI' :
+                  result.model === 'mri' ? 'MRI Brain Scan Analysis AI' : 'Voice Pattern Analysis AI'
+                }<br/>
                 <strong>Confidence Level:</strong> {result.confidence.toFixed(2)}%<br/>
                 <strong>Primary Finding:</strong> {result.prediction === 'Parkinson' ? 'Parkinson\'s disease indicators detected' : 'No Parkinson\'s disease indicators detected'}
                 {aiAnalysis && <><br/><strong>Recommendation Model:</strong> {aiAnalysis.model_used}</>}

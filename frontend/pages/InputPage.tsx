@@ -2,9 +2,9 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PredictionResult } from '../types';
-import { predictHandwriting, predictMRI, getAIAnalysis } from '../lib/api';
+import { predictHandwriting, predictMRI, predictVoice, getAIAnalysis } from '../lib/api';
 
-type TestMethod = 'handwriting' | 'mri' | null;
+type TestMethod = 'handwriting' | 'mri' | 'voice' | null;
 
 const InputPage: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const InputPage: React.FC = () => {
 
     // Validation
     if (!fullName || !age || !testMethod || !selectedFile) {
-      setError('Please fill in all required fields and select a test method and image.');
+      setError('Please fill in all required fields and select a test method and file.');
       return;
     }
 
@@ -49,10 +49,19 @@ const InputPage: React.FC = () => {
           healthy_probability: apiResponse.healthy_probability,
           parkinson_probability: apiResponse.parkinson_probability,
         };
-      } else {
+      } else if (testMethod === 'mri') {
         const apiResponse = await predictMRI(selectedFile);
         result = {
           model: 'mri',
+          prediction: apiResponse.prediction,
+          confidence: apiResponse.confidence,
+          healthy_probability: apiResponse.healthy_probability,
+          parkinson_probability: apiResponse.parkinson_probability,
+        };
+      } else {
+        const apiResponse = await predictVoice(selectedFile);
+        result = {
+          model: 'voice',
           prediction: apiResponse.prediction,
           confidence: apiResponse.confidence,
           healthy_probability: apiResponse.healthy_probability,
@@ -123,7 +132,7 @@ const InputPage: React.FC = () => {
           {!testMethod ? (
             <div className="space-y-4">
               <label className="block text-sm font-semibold text-gray-700">Select Testing Method *</label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button
                   type="button"
                   onClick={() => { setTestMethod('handwriting'); setSelectedFile(null); }}
@@ -143,6 +152,16 @@ const InputPage: React.FC = () => {
                   <h3 className="font-bold text-gray-800">MRI Scan Test</h3>
                   <p className="text-xs text-gray-600 mt-2">Upload an MRI brain scan image</p>
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setTestMethod('voice'); setSelectedFile(null); }}
+                  className="p-6 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+                >
+                  <i className="fas fa-microphone text-4xl text-blue-600 mb-3 block"></i>
+                  <h3 className="font-bold text-gray-800">Voice Test</h3>
+                  <p className="text-xs text-gray-600 mt-2">Upload a voice recording sample</p>
+                </button>
               </div>
             </div>
           ) : (
@@ -150,15 +169,22 @@ const InputPage: React.FC = () => {
               {/* Selected Method Indicator */}
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <i className={`text-2xl ${testMethod === 'handwriting' ? 'fas fa-pen text-blue-600' : 'fas fa-brain text-blue-600'}`}></i>
+                  <i className={`text-2xl ${
+                    testMethod === 'handwriting' ? 'fas fa-pen text-blue-600' :
+                    testMethod === 'mri' ? 'fas fa-brain text-blue-600' :
+                    'fas fa-microphone text-blue-600'
+                  }`}></i>
                   <div>
                     <p className="text-sm font-bold text-gray-800">
-                      {testMethod === 'handwriting' ? 'Handwriting Test' : 'MRI Scan Test'}
+                      {testMethod === 'handwriting' ? 'Handwriting Test' :
+                       testMethod === 'mri' ? 'MRI Scan Test' : 'Voice Test'}
                     </p>
                     <p className="text-xs text-gray-600">
                       {testMethod === 'handwriting' 
                         ? 'Upload a handwriting or spiral sample' 
-                        : 'Upload an MRI brain scan'}
+                        : testMethod === 'mri'
+                        ? 'Upload an MRI brain scan'
+                        : 'Upload a voice recording sample'}
                     </p>
                   </div>
                 </div>
@@ -228,17 +254,22 @@ const InputPage: React.FC = () => {
               {/* File Upload */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-700">
-                  {testMethod === 'handwriting' ? 'Handwriting/Spiral Sample *' : 'MRI Brain Image *'}
+                  {testMethod === 'handwriting' ? 'Handwriting/Spiral Sample *' : 
+                   testMethod === 'mri' ? 'MRI Brain Image *' : 'Voice Recording *'}
                 </label>
                 <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-400 transition-colors">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept={testMethod === 'voice' ? 'audio/*' : 'image/*'}
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <div className="text-center">
-                    <i className={`text-4xl mb-3 block ${testMethod === 'handwriting' ? 'fas fa-pen text-gray-400' : 'fas fa-brain text-gray-400'}`}></i>
+                    <i className={`text-4xl mb-3 block ${
+                      testMethod === 'handwriting' ? 'fas fa-pen text-gray-400' :
+                      testMethod === 'mri' ? 'fas fa-brain text-gray-400' :
+                      'fas fa-microphone text-gray-400'
+                    }`}></i>
                     <p className="text-sm text-gray-700 font-medium">
                       {selectedFile ? selectedFile.name : 'Click to upload or drag and drop'}
                     </p>

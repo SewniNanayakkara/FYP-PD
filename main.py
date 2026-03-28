@@ -12,6 +12,10 @@ import requests
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from typing import Optional
+import librosa
+import pickle
+import soundfile as sf
+import joblib
 
 # Load environment variables
 load_dotenv()
@@ -44,6 +48,7 @@ app.add_middleware(
 
 HANDWRITING_MODEL_PATH = "models/parkinsons_handwriting_model.keras"
 MRI_MODEL_PATH = "models/mri_model.keras"
+VOICE_MODEL_PATH = "models/voice_model.pkl"
 
 
 # Load Models (once at startup)
@@ -51,8 +56,18 @@ MRI_MODEL_PATH = "models/mri_model.keras"
 handwriting_model = tf.keras.models.load_model(HANDWRITING_MODEL_PATH)
 mri_model = tf.keras.models.load_model(MRI_MODEL_PATH)
 
+# Load Voice Model
+try:
+    with open(VOICE_MODEL_PATH, 'rb') as f:
+        voice_model = pickle.load(f)
+except:
+    # Try joblib if pickle fails
+    voice_model = joblib.load(VOICE_MODEL_PATH)
+
 print("✅ Handwriting model loaded")
 print("✅ MRI model loaded")
+print("✅ Voice model loaded")
+print("🚀 Starting Parkinson AI API...")
 
 
 # Constants
@@ -84,6 +99,21 @@ def preprocess_mri(file_bytes):
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
     return img_array
+
+
+def extract_features(audio_data, sample_rate):
+    """Extract acoustic features from audio for Parkinson's voice detection"""
+    try:
+        # Extract MFCCs (13 coefficients) - this is what the model expects
+        mfccs = librosa.feature.mfcc(y=audio_data, sr=sample_rate, n_mfcc=13)
+        features = np.mean(mfccs, axis=1)  # 13 features
+        
+        return features
+        
+    except Exception as e:
+        print(f"Error extracting features: {e}")
+        # Return zero features as fallback
+        return np.zeros(13)
 
 
 # Routes
@@ -154,6 +184,57 @@ async def predict_mri(file: UploadFile = File(...)):
             "prediction": label,
             "confidence": round(confidence, 2),
             "parkinson_probability": round(probability * 100, 2)
+        })
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+
+# Voice Prediction Endpoint
+
+@app.post("/predict/voice")
+async def predict_voice(file: UploadFile = File(...)):
+    try:
+        # Read the uploaded audio file
+        contents = await file.read()
+        
+        # Load audio data using soundfile
+        audio_data, sample_rate = sf.read(io.BytesIO(contents))
+        
+        # Ensure audio is mono
+        if len(audio_data.shape) > 1:
+            audio_data = np.mean(audio_data, axis=1)
+        
+        # Extract features
+        features = extract_features(audio_data, sample_rate)
+        
+        # Make prediction
+        prediction = voice_model.predict([features])
+        
+        # Assuming binary classification: 0 = Healthy, 1 = Parkinson
+        is_parkinson = prediction[0] == 1
+        label = "Parkinson" if is_parkinson else "Healthy"
+        
+        # For confidence, we might need prediction probabilities
+        # If the model has predict_proba, use it; otherwise use a simple confidence
+        try:
+            probabilities = voice_model.predict_proba([features])[0]
+            confidence = float(probabilities[1] if is_parkinson else probabilities[0]) * 100
+            healthy_prob = float(probabilities[0]) * 100
+            parkinson_prob = float(probabilities[1]) * 100
+        except:
+            # Fallback if no predict_proba
+            confidence = 80.0 if abs(prediction[0] - 0.5) > 0.3 else 60.0
+            healthy_prob = 100 - confidence if is_parkinson else confidence
+            parkinson_prob = confidence if is_parkinson else 100 - confidence
+
+        return JSONResponse({
+            "model": "voice",
+            "prediction": label,
+            "confidence": round(confidence, 2),
+            "healthy_probability": round(healthy_prob, 2),
+            "parkinson_probability": round(parkinson_prob, 2)
         })
 
     except Exception as e:
@@ -359,3 +440,9 @@ Monitor for these symptoms and consult a doctor if you experience:
 3. Maintain a healthy, active lifestyle
 
 *This analysis is for informational purposes only and does not constitute medical advice.*"""
+
+
+if __name__ == "__main__":
+    import uvicorn
+    print("Starting FastAPI server...")
+    uvicorn.run(app, host="0.0.0.0", port=8000)

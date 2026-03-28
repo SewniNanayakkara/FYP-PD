@@ -7,7 +7,7 @@ export interface PatientData {
 }
 
 export interface PredictionResult {
-  model: 'handwriting' | 'mri';
+  model: 'handwriting' | 'mri' | 'voice';
   prediction: 'Parkinson' | 'Healthy';
   confidence: number;
   healthy_probability?: number;
@@ -42,7 +42,7 @@ export interface AIAnalysisResponse {
 export interface NavigationState {
   result: PredictionResult;
   patientName: string;
-  method: 'handwriting' | 'mri';
+  method: 'handwriting' | 'mri' | 'voice';
   patientAge: number;
   patientGender: string;
   patientSymptoms: string;
