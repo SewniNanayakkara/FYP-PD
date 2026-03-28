@@ -51,7 +51,7 @@ const LandingPage: React.FC = () => {
             Advanced Detection Methods
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid md:grid-cols-3 gap-12">
             {/* Handwriting Analysis */}
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl shadow-md hover:shadow-lg transition">
               <div className="flex items-center gap-4 mb-6">
@@ -115,6 +115,39 @@ const LandingPage: React.FC = () => {
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
               >
                 Test MRI <i className="fas fa-arrow-right ml-2"></i>
+              </button>
+            </div>
+
+            {/* Voice Analysis */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl shadow-md hover:shadow-lg transition">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="bg-green-600 rounded-full p-3">
+                  <i className="fas fa-microphone text-white text-2xl"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Voice Analysis</h3>
+              </div>
+              <p className="text-gray-700 mb-6">
+                Machine learning algorithms analyze voice recordings to detect subtle changes in speech patterns, pitch, and rhythm that may indicate early Parkinson's disease symptoms.
+              </p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-start gap-3">
+                  <i className="fas fa-check-circle text-green-600 text-lg mt-1"></i>
+                  <span className="text-gray-700">Non-invasive voice recording analysis</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <i className="fas fa-check-circle text-green-600 text-lg mt-1"></i>
+                  <span className="text-gray-700">Detects speech pattern irregularities</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <i className="fas fa-check-circle text-green-600 text-lg mt-1"></i>
+                  <span className="text-gray-700">Advanced audio signal processing</span>
+                </li>
+              </ul>
+              <button
+                onClick={() => navigate('/test')}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+              >
+                Test Voice <i className="fas fa-arrow-right ml-2"></i>
               </button>
             </div>
           </div>
