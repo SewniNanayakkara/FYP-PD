@@ -7,7 +7,7 @@ MODEL_PATH = "parkinsons_handwriting_model.keras"
 IMG_SIZE = 224
 CLASS_NAMES = ["Healthy", "Parkinsons"]
 
-# 🔑 SAFE LOAD (important)
+
 model = tf.keras.models.load_model(
     MODEL_PATH,
     compile=False,

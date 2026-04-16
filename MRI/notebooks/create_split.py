@@ -50,4 +50,4 @@ for cls in CLASSES:
             )
             shutil.copy(img_path, dst)
 
-print("✅ Dataset split completed")
+print("Dataset split completed")

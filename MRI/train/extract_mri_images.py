@@ -2,7 +2,7 @@ import os
 import shutil
 
 
-# PATHS 
+
 
 BASE_DATASET = os.path.join("dataset", "MRI Data")
 OUTPUT_DATASET = "dataset_extracted"
@@ -11,13 +11,13 @@ NON_PD_DIR = os.path.join(BASE_DATASET, "Non PD Patients")
 PD_DIR = os.path.join(BASE_DATASET, "PD Patients")
 
 
-# CREATE OUTPUT FOLDERS
+
 
 os.makedirs(os.path.join(OUTPUT_DATASET, "Healthy"), exist_ok=True)
 os.makedirs(os.path.join(OUTPUT_DATASET, "Parkinson"), exist_ok=True)
 
 
-# FUNCTION TO PROCESS SUBJECTS
+
 
 def extract_images(subject_root, label_folder):
     for subject in os.listdir(subject_root):
@@ -28,7 +28,7 @@ def extract_images(subject_root, label_folder):
 
         mri_folder = os.path.join(subject_path, "1.MRI")
 
-        # Skip subjects without MRI folder
+        
         if not os.path.exists(mri_folder):
             print(f"Skipping {subject} (no 1.MRI folder)")
             continue
@@ -43,7 +43,7 @@ def extract_images(subject_root, label_folder):
         print(f"Processed {subject}")
 
 
-# RUN EXTRACTION
+
 
 print("Extracting Healthy (Non-PD) subjects...")
 extract_images(NON_PD_DIR, "Healthy")
@@ -51,4 +51,4 @@ extract_images(NON_PD_DIR, "Healthy")
 print("Extracting Parkinson (PD) subjects...")
 extract_images(PD_DIR, "Parkinson")
 
-print("✅ MRI image extraction completed successfully.")
+print("MRI image extraction completed successfully.")

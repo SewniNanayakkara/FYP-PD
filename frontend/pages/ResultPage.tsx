@@ -8,7 +8,7 @@ const ResultPage: React.FC = () => {
   const navigate = useNavigate();
   const state = location.state as NavigationState | null;
 
-  // Redirect back if no state is present (direct URL access)
+  
   useEffect(() => {
     if (!state) {
       navigate('/');
@@ -20,11 +20,11 @@ const ResultPage: React.FC = () => {
   const { result, patientName, method, patientAge, patientGender, patientSymptoms, aiAnalysis } = state;
   const isPositive = result.prediction === 'Parkinson';
 
-  // Simple markdown-like rendering for AI response
+  
   const renderAIAnalysis = (text: string) => {
     if (!text) return null;
     
-    // Split by lines and process
+    
     const lines = text.split('\n');
     const elements: JSX.Element[] = [];
     let listItems: string[] = [];
@@ -33,7 +33,7 @@ const ResultPage: React.FC = () => {
     lines.forEach((line, index) => {
       const trimmed = line.trim();
       
-      // Headers
+      
       if (trimmed.startsWith('## ')) {
         if (listItems.length > 0) {
           elements.push(<ul key={`list-${index}`} className="list-disc pl-6 mb-4 space-y-1">{listItems.map((item, i) => <li key={i} className="text-gray-700">{item}</li>)}</ul>);
@@ -47,7 +47,7 @@ const ResultPage: React.FC = () => {
         }
         elements.push(<h4 key={index} className="text-md font-semibold text-gray-700 mt-4 mb-2">{trimmed.slice(4)}</h4>);
       }
-      // Bold text markers
+      
       else if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
         if (listItems.length > 0) {
           elements.push(<ul key={`list-${index}`} className="list-disc pl-6 mb-4 space-y-1">{listItems.map((item, i) => <li key={i} className="text-gray-700">{item}</li>)}</ul>);
@@ -55,26 +55,26 @@ const ResultPage: React.FC = () => {
         }
         elements.push(<p key={index} className="font-semibold text-gray-800 mt-3 mb-2">{trimmed.slice(2, -2)}</p>);
       }
-      // List items
+      
       else if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || /^\d+\.\s/.test(trimmed)) {
         const content = trimmed.replace(/^[-*]\s|^\d+\.\s/, '');
         listItems.push(content);
         inList = true;
       }
-      // Regular paragraphs
+      
       else if (trimmed.length > 0) {
         if (listItems.length > 0) {
           elements.push(<ul key={`list-${index}`} className="list-disc pl-6 mb-4 space-y-1">{listItems.map((item, i) => <li key={i} className="text-gray-700">{item}</li>)}</ul>);
           listItems = [];
         }
-        // Handle inline bold
+        
         const parts = trimmed.split(/\*\*(.*?)\*\*/g);
         const rendered = parts.map((part, i) => i % 2 === 1 ? <strong key={i}>{part}</strong> : part);
         elements.push(<p key={index} className="text-gray-700 mb-2">{rendered}</p>);
       }
     });
     
-    // Flush remaining list items
+    
     if (listItems.length > 0) {
       elements.push(<ul key="list-final" className="list-disc pl-6 mb-4 space-y-1">{listItems.map((item, i) => <li key={i} className="text-gray-700">{item}</li>)}</ul>);
     }

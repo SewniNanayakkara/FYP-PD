@@ -12,7 +12,7 @@ EPOCHS_STAGE2 = 5
 DATASET_DIR = "dataset_split"
 
 
-# LOAD DATA
+
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     os.path.join(DATASET_DIR, "train"),
@@ -37,7 +37,7 @@ class_names = train_ds.class_names
 num_classes = len(class_names)
 
 
-# CLASS WEIGHTS
+
 
 def get_class_counts(ds):
     counts = np.zeros(num_classes)
@@ -55,7 +55,7 @@ class_weights = {
 }
 
 
-# PERFORMANCE
+
 
 AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.shuffle(500).prefetch(AUTOTUNE)
@@ -63,7 +63,7 @@ val_ds = val_ds.prefetch(AUTOTUNE)
 test_ds = test_ds.prefetch(AUTOTUNE)
 
 
-# AUGMENTATION
+
 
 data_aug = tf.keras.Sequential([
     tf.keras.layers.RandomFlip("horizontal"),
@@ -73,7 +73,7 @@ data_aug = tf.keras.Sequential([
 ])
 
 
-# MODEL
+
 
 base_model = tf.keras.applications.MobileNetV2(
     input_shape=(IMG_SIZE[0], IMG_SIZE[1], 3),
@@ -98,7 +98,7 @@ model = tf.keras.Sequential([
 ])
 
 
-# STAGE 1 TRAIN
+
 
 model.compile(
     optimizer=tf.keras.optimizers.Adam(1e-4),
@@ -119,7 +119,7 @@ model.fit(
 )
 
 
-# STAGE 2 STABILIZATION
+
 
 base_model.trainable = False
 
@@ -137,4 +137,4 @@ model.fit(
 )
 
 model.save("mri_parkinson_final.keras")
-print("✅ Model saved")
+print("Model saved")

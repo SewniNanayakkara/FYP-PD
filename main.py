@@ -17,23 +17,23 @@ import pickle
 import soundfile as sf
 import joblib
 
-# Load environment variables
+
 load_dotenv()
 
 
-# Hugging Face Configuration
+
 
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 MISTRAL_MODEL = "mistralai/Mistral-7B-Instruct-v0.3"
 HF_API_URL = f"https://api-inference.huggingface.co/models/{MISTRAL_MODEL}"
 
 
-# FastAPI App
+
 
 app = FastAPI(title="Parkinson AI Prediction API")
 
 
-# Enable CORS
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,33 +44,33 @@ app.add_middleware(
 )
 
 
-# Model Paths
+
 
 HANDWRITING_MODEL_PATH = "models/parkinsons_handwriting_model.keras"
 MRI_MODEL_PATH = "models/mri_model.keras"
 VOICE_MODEL_PATH = "models/voice_model.pkl"
 
 
-# Load Models (once at startup)
+
 
 handwriting_model = tf.keras.models.load_model(HANDWRITING_MODEL_PATH)
 mri_model = tf.keras.models.load_model(MRI_MODEL_PATH)
 
-# Load Voice Model
+
 try:
     with open(VOICE_MODEL_PATH, 'rb') as f:
         voice_model = pickle.load(f)
 except:
-    # Try joblib if pickle fails
+    
     voice_model = joblib.load(VOICE_MODEL_PATH)
 
-print("✅ Handwriting model loaded")
-print("✅ MRI model loaded")
-print("✅ Voice model loaded")
-print("🚀 Starting Parkinson AI API...")
+print("Handwriting model loaded")
+print("MRI model loaded")
+print("Voice model loaded")
+print("Starting Parkinson AI API...")
 
 
-# Constants
+
 
 HANDWRITING_IMG_SIZE = (224, 224)
 MRI_IMG_SIZE = (192, 192)
@@ -80,7 +80,7 @@ HIGH_THRESHOLD = 0.7
 MRI_THRESHOLD = 0.4
 
 
-# Utility Functions
+
 
 def preprocess_handwriting(file_bytes):
     img = Image.open(io.BytesIO(file_bytes)).convert("RGB")
@@ -104,28 +104,28 @@ def preprocess_mri(file_bytes):
 def extract_features(audio_data, sample_rate):
     """Extract acoustic features from audio for Parkinson's voice detection"""
     try:
-        # Extract MFCCs (13 coefficients) - this is what the model expects
+        
         mfccs = librosa.feature.mfcc(y=audio_data, sr=sample_rate, n_mfcc=13)
-        features = np.mean(mfccs, axis=1)  # 13 features
+        features = np.mean(mfccs, axis=1) 
         
         return features
         
     except Exception as e:
         print(f"Error extracting features: {e}")
-        # Return zero features as fallback
+        
         return np.zeros(13)
 
 
-# Routes
+
 
 
 @app.get("/")
 def root():
-    return {"message": "🧠 Parkinson AI API is running"}
+    return {"message": "Parkinson AI API is running"}
 
 
 
-# Handwriting Prediction Endpoint
+
 
 @app.post("/predict/handwriting")
 async def predict_handwriting(file: UploadFile = File(...)):
@@ -137,7 +137,7 @@ async def predict_handwriting(file: UploadFile = File(...)):
         healthy_prob = float(probs[0])
         parkinson_prob = float(probs[1])
 
-        # Clinical decision logic
+        
         if parkinson_prob >= HIGH_THRESHOLD:
             label = "Parkinson"
             confidence = parkinson_prob * 100
@@ -161,7 +161,7 @@ async def predict_handwriting(file: UploadFile = File(...)):
 
 
 
-# MRI Prediction Endpoint
+
 
 @app.post("/predict/mri")
 async def predict_mri(file: UploadFile = File(...)):
@@ -191,40 +191,39 @@ async def predict_mri(file: UploadFile = File(...)):
 
 
 
-# Voice Prediction Endpoint
+
 
 @app.post("/predict/voice")
 async def predict_voice(file: UploadFile = File(...)):
     try:
-        # Read the uploaded audio file
+        
         contents = await file.read()
         
-        # Load audio data using soundfile
+        
         audio_data, sample_rate = sf.read(io.BytesIO(contents))
         
-        # Ensure audio is mono
+        
         if len(audio_data.shape) > 1:
             audio_data = np.mean(audio_data, axis=1)
         
-        # Extract features
+        
         features = extract_features(audio_data, sample_rate)
         
-        # Make prediction
+        
         prediction = voice_model.predict([features])
         
-        # Assuming binary classification: 0 = Healthy, 1 = Parkinson
+        
         is_parkinson = prediction[0] == 1
         label = "Parkinson" if is_parkinson else "Healthy"
         
-        # For confidence, we might need prediction probabilities
-        # If the model has predict_proba, use it; otherwise use a simple confidence
+        
         try:
             probabilities = voice_model.predict_proba([features])[0]
             confidence = float(probabilities[1] if is_parkinson else probabilities[0]) * 100
             healthy_prob = float(probabilities[0]) * 100
             parkinson_prob = float(probabilities[1]) * 100
         except:
-            # Fallback if no predict_proba
+            
             confidence = 80.0 if abs(prediction[0] - 0.5) > 0.3 else 60.0
             healthy_prob = 100 - confidence if is_parkinson else confidence
             parkinson_prob = confidence if is_parkinson else 100 - confidence
@@ -242,19 +241,19 @@ async def predict_voice(file: UploadFile = File(...)):
 
 
 
-# Pydantic Models for AI Analysis
+
 
 class PatientAnalysisRequest(BaseModel):
     age: int
     gender: str
     symptoms: str
-    prediction_result: str  # "Parkinson" or "Healthy"
+    prediction_result: str  
     confidence: float
-    test_method: str  # "handwriting" or "mri"
+    test_method: str  
 
 
 
-# Helper Function for Mistral API
+
 
 def query_mistral(prompt: str) -> str:
     """Query the Mistral model via Hugging Face API"""
@@ -263,7 +262,7 @@ def query_mistral(prompt: str) -> str:
         "Content-Type": "application/json"
     }
     
-    # Format for Mistral instruction model
+
     formatted_prompt = f"<s>[INST] {prompt} [/INST]"
     
     payload = {
@@ -291,7 +290,7 @@ def query_mistral(prompt: str) -> str:
 
 
 
-# AI-Powered Analysis Endpoint
+
 
 @app.post("/analyze/patient")
 async def analyze_patient(request: PatientAnalysisRequest):
@@ -300,7 +299,7 @@ async def analyze_patient(request: PatientAnalysisRequest):
     and prediction results using Mistral-7B
     """
     try:
-        # Build the prompt for Mistral
+
         prompt = f"""You are a medical AI assistant specialized in Parkinson's disease. 
 Based on the following patient information and test results, provide a comprehensive analysis.
 
@@ -328,11 +327,11 @@ IMPORTANT: This is for informational purposes only and should not replace profes
 
 Provide a clear, compassionate, and actionable response."""
 
-        # Query Mistral for analysis
+       
         ai_response = query_mistral(prompt)
         
         if ai_response is None:
-            # Fallback response if API fails
+            
             ai_response = generate_fallback_recommendations(request)
         
         return JSONResponse({

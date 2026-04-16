@@ -14,7 +14,7 @@ model = tf.keras.models.load_model(
     custom_objects={"preprocess_input": preprocess_input}
 )
 
-# LOAD TEST IMAGES MANUALLY
+
 
 images = []
 labels = []
@@ -34,23 +34,23 @@ for label_name in ["Healthy", "Parkinson"]:
         images.append(img)
         labels.append(label)
 
-        subject_id = fname.split("_")[0]  # SubjectXX
+        subject_id = fname.split("_")[0] 
         subjects.append(subject_id)
 
 images = np.array(images)
 labels = np.array(labels)
 
 
-# PREDICTION
+
 
 probs = model.predict(images, batch_size=4)[:, 1]
 
-# Threshold tuning (BEST RANGE)
+
 THRESHOLD = 0.4
 preds = (probs > THRESHOLD).astype(int)
 
 
-# SUBJECT-LEVEL VOTING
+
 
 subject_votes = defaultdict(list)
 subject_true = {}

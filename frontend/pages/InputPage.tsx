@@ -12,10 +12,10 @@ const InputPage: React.FC = () => {
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // Method Selection
+  
   const [testMethod, setTestMethod] = useState<TestMethod>(null);
 
-  // Form State
+  
   const [fullName, setFullName] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('Male');
@@ -26,7 +26,7 @@ const InputPage: React.FC = () => {
     e.preventDefault();
     setError(null);
 
-    // Validation
+    
     if (!fullName || !age || !testMethod || !selectedFile) {
       setError('Please fill in all required fields and select a test method and file.');
       return;
@@ -37,7 +37,7 @@ const InputPage: React.FC = () => {
     try {
       let result: PredictionResult;
       
-      // Step 1: Get prediction from ML model
+      
       setLoadingMessage('Analyzing image...');
 
       if (testMethod === 'handwriting') {
@@ -69,7 +69,7 @@ const InputPage: React.FC = () => {
         };
       }
 
-      // Step 2: Get AI analysis and recommendations from Mistral
+      
       setLoadingMessage('Generating AI recommendations...');
       
       let aiAnalysis = undefined;
@@ -84,7 +84,7 @@ const InputPage: React.FC = () => {
         });
       } catch (aiError) {
         console.warn('AI analysis failed, continuing without it:', aiError);
-        // Continue without AI analysis - it's optional
+        
       }
 
       navigate('/result', { 
